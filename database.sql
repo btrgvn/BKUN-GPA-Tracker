@@ -1,0 +1,34 @@
+-- Chạy file này trong phpMyAdmin (tab SQL)
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `username` VARCHAR(50) UNIQUE NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `full_name` VARCHAR(100) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `hoc_ky` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `ten` VARCHAR(100) NOT NULL,
+  `thu_tu` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `mon_hoc` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `hoc_ky_id` INT NOT NULL,
+  `ten` VARCHAR(150) NOT NULL,
+  `tin_chi` INT NOT NULL DEFAULT 3,
+  `loai` ENUM('lytuyet','thuchanh') DEFAULT 'lytuyet',
+  `diem_hs1` FLOAT DEFAULT NULL,
+  `diem_hs2` TEXT DEFAULT NULL,
+  `diem_hs3` FLOAT DEFAULT NULL,
+  `diem_thuchanh` TEXT DEFAULT NULL,
+  `diem_hp` FLOAT DEFAULT NULL,
+  `diem_chu` VARCHAR(5) DEFAULT NULL,
+  `gpa4` FLOAT DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`hoc_ky_id`) REFERENCES `hoc_ky`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

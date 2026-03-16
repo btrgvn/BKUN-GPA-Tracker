@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<link rel="icon" type="image/x-icon" href="favicon.png">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="keywords" content="bkun tính điểm, bkun bảng điểm cá nhân, bkun tính điểm gpa vlute,bảng điểm cá nhân vlute, cách tính điểm vlute, cách tính gpa vlute, cách tính học lực vlute, tính điểm vlute, tính gpa vlute">
+<meta name="description" content="Công cụ giúp sinh viên tính điểm học phần, GPA học kỳ và GPA tích lũy cho sinh viên VLUTE">
+<title>BKUN - Bảng Điểm Cá Nhân</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#0d9e73;--gd:#087a58;--gl:#e6f7f2;--bg:#f0f4f8;
+  --card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --r:14px;--sh:0 4px 24px rgba(0,0,0,.07);--sh2:0 2px 8px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* tối ưu đt */
+    @media (max-width:768px){
+.up{
+font-size:14px;
+}
+}
+    @media (max-width:768px){
+.note-warning{
+padding:10px 12px;
+font-size:13px;
+}
+}
+    @media (max-width:768px){
+.sc{
+padding:14px;
+}
+}
+    .sg{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:14px;
+}
+    
+/* BG */
+.bg-c{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(135deg,#e8f5f0,#f0f7ff 50%,#fdf4e8);overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.35;animation:bm 12s ease-in-out infinite alternate}
+.b1{width:500px;height:500px;background:radial-gradient(#34d399,#10b981);top:-150px;left:-100px}
+.b2{width:400px;height:400px;background:radial-gradient(#60a5fa,#3b82f6);top:30%;right:-100px;animation-delay:-4s}
+.b3{width:350px;height:350px;background:radial-gradient(#fbbf24,#f59e0b);bottom:-100px;left:20%;animation-delay:-8s}
+.b4{width:300px;height:300px;background:radial-gradient(#a78bfa,#8b5cf6);bottom:10%;right:15%;animation-delay:-2s}
+@keyframes bm{0%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,20px) scale(1.08)}100%{transform:translate(-20px,40px) scale(.95)}}
+.pts{position:fixed;inset:0;z-index:0;pointer-events:none}
+.pt{position:absolute;border-radius:50%;background:rgba(13,158,115,.15);animation:fl linear infinite}
+@keyframes fl{0%{transform:translateY(100vh) rotate(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100px) rotate(720deg);opacity:0}}
+
+#app{position:relative;z-index:1;min-height:100vh}
+
+/* LOGIN */
+.lp{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.lb{width:100%;max-width:420px;background:rgba(255,255,255,.88);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.6);border-radius:24px;padding:2.5rem;
+  box-shadow:0 20px 60px rgba(0,0,0,.12);animation:su .5s ease}
+@keyframes su{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.ll{text-align:center;margin-bottom:2rem}
+.ll .icon{width:72px;height:72px;border-radius:20px;margin:0 auto 12px;
+  background:linear-gradient(135deg,#0d9e73,#34d399);display:flex;align-items:center;
+  justify-content:center;font-size:32px;box-shadow:0 8px 24px rgba(13,158,115,.35)}
+.ll h1{font-size:22px;font-weight:700}
+.ll p{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.5rem}
+.tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:13px;font-weight:500;
+  color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab.on{color:var(--g);border-bottom-color:var(--g)}
+
+/* FORM */
+.fg{margin-bottom:14px}
+label{font-size:13px;font-weight:500;color:var(--muted);display:block;margin-bottom:6px}
+input,select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;
+  background:#fff;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 3px rgba(13,158,115,.12)}
+.sub{font-size:11px;color:#aaa;font-weight:400}
+/* Score inputs */
+.sinput{width:80px;text-align:center}
+.sinput.err{border-color:#ef4444!important;background:#fef2f2}
+
+/* BUTTONS */
+.btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;
+  border:1.5px solid var(--border);background:#fff;color:var(--text);
+  transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.btn:hover:not(:disabled){background:#f8fafc;transform:translateY(-1px);box-shadow:var(--sh2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.bp{background:linear-gradient(135deg,#0d9e73,#10b981);color:#fff;border-color:transparent;
+  box-shadow:0 4px 14px rgba(13,158,115,.3)}
+.bp:hover:not(:disabled){background:linear-gradient(135deg,#087a58,#0d9e73)!important;box-shadow:0 6px 20px rgba(13,158,115,.4)!important}
+.bd{color:#dc2626;border-color:#fecaca;background:#fff5f5}
+.bd:hover:not(:disabled){background:#fef2f2!important}
+.bsm{padding:6px 12px;font-size:12px;border-radius:8px}
+.bfl{width:100%;justify-content:center;padding:12px;font-size:15px}
+
+/* ALERTS */
+.alert{padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:14px;font-weight:500}
+.ae{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.ao{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+
+/* HEADER */
+.hdr{background:rgba(255,255,255,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.6);position:sticky;top:0;z-index:100;padding:0 1.5rem}
+.hdr-i{max-width:1000px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo-w{display:flex;align-items:center;gap:10px}
+.logo-d{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d9e73,#34d399);display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-w span{font-size:16px;font-weight:700;color:var(--g)}
+.up{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:var(--gl);color:#087a58;font-size:13px;font-weight:500}
+.av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0d9e73,#34d399);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+/* Lưu ý */
+.note-warning{
+    max-width:1100px;          /* cùng chiều rộng với card */
+    margin:10px auto 25px auto;
+    padding:12px 16px;
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    background:#fee2e2;        /* nền đỏ nhạt */
+    border:1px solid #ef4444;  /* viền đỏ */
+    color:#991b1b;             /* chữ đỏ đậm */
+
+    border-radius:10px;
+    font-size:14px;
+    font-weight:500;
+}
+.icon{
+    font-size:16px;
+}
+    
+/* MAIN */
+.main{max-width:1000px;margin:0 auto;padding:1.5rem}
+
+/* SUMMARY */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.5rem}
+.sc{background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);
+  border-radius:var(--r);padding:1.25rem;box-shadow:var(--sh2);transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cg::before{background:linear-gradient(90deg,#10b981,#34d399)}
+.cb::before{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.ca::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.cp::before{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--sh)}
+.si{font-size:24px;margin-bottom:8px}
+.sv{font-size:28px;font-weight:700;line-height:1}
+.sl{font-size:12px;color:var(--muted);margin-top:4px;font-weight:500}
+.cg .sv{color:var(--g)}.cb .sv{color:#3b82f6}.ca .sv{color:#d97706}.cp .sv{color:#7c3aed}
+
+/* HK NAV */
+.hknav{background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;box-shadow:var(--sh2)}
+.hknav-i{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hktabs{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+.hktab{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;
+  border:1.5px solid var(--border);background:#fff;color:var(--muted);transition:all .2s}
+.hktab:hover{border-color:var(--g);color:var(--g)}
+.hktab.on{background:linear-gradient(135deg,#0d9e73,#10b981);color:#fff;border-color:transparent;box-shadow:0 2px 10px rgba(13,158,115,.3)}
+
+/* HK CARD */
+.hkcard{background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);border-radius:var(--r);padding:1.5rem;box-shadow:var(--sh2)}
+.hkh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.hkta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hkt{font-size:17px;font-weight:700}
+.hksr{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.hkst{background:var(--bg);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border)}
+.hksv{font-size:20px;font-weight:700;color:var(--g)}
+.hksl{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* BADGE */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.bA{background:#d1fae5;color:#065f46}.bBp{background:#dcfce7;color:#14532d}
+.bB{background:#dcfce7;color:#14532d}.bCp{background:#fef9c3;color:#713f12}
+.bC{background:#fef9c3;color:#713f12}.bDp{background:#ffedd5;color:#7c2d12}
+.bD{background:#ffedd5;color:#7c2d12}.bF{background:#fee2e2;color:#7f1d1d}
+.xlb{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.xs{background:#d1fae5;color:#065f46}.xg{background:#dcfce7;color:#166534}
+.xk{background:#fef3c7;color:#92400e}.xt{background:#fee2e2;color:#991b1b}
+.xy{background:#fecaca;color:#7f1d1d}
+.chip{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;background:var(--gl);color:#087a58;font-weight:600;border:1px solid rgba(13,158,115,.2)}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:580px}
+thead tr{background:#f8fafc}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+td{padding:11px 14px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fffe}
+
+/* FORM CARD */
+.fc{background:linear-gradient(135deg,rgba(230,247,242,.85),rgba(240,253,250,.9));
+  border:1.5px solid rgba(13,158,115,.25);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.fct{font-size:15px;font-weight:700;color:#087a58;margin-bottom:1.25rem}
+.sbox{background:rgba(255,255,255,.75);border-radius:10px;padding:14px;margin-bottom:14px;border:1px solid var(--border)}
+.fnote{font-size:11px;color:var(--muted);background:#f8fafc;padding:8px 12px;border-radius:8px;margin-bottom:12px;border-left:3px solid var(--g)}
+.pvbox{background:linear-gradient(135deg,#d1fae5,#e6f7f2);border-radius:10px;padding:12px 16px;margin-top:12px;
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap;border:1px solid rgba(13,158,115,.2)}
+.pvs{font-size:26px;font-weight:700;color:var(--g)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* SPINNER */
+.sp{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.spg{border-color:rgba(13,158,115,.3);border-top-color:var(--g)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{text-align:center;padding:1.5rem 1rem 2rem;font-size:12px;color:var(--muted)}
+.footer a{color:var(--g);text-decoration:none;font-weight:600}
+.footer a:hover{text-decoration:underline}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px}
+.ei{font-size:48px;margin-bottom:12px;opacity:.4}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 20px;border-radius:12px;
+  font-size:14px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,.15);
+  animation:tin .3s ease;max-width:320px}
+.tok{background:#0d9e73;color:#fff}.terr{background:#ef4444;color:#fff}
+@keyframes tin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:640px){
+  .sg{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}
+  .hksr{grid-template-columns:1fr 1fr}.main{padding:1rem}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-c"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
+<div class="pts" id="pts"></div>
+<div id="app"></div>
+
+<script>
+// ── Particles ────────────────────────────────────────────────
+(()=>{const c=document.getElementById('pts');for(let i=0;i<18;i++){const d=document.createElement('div');d.className='pt';const s=Math.random()*6+4;d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*15}s`;c.appendChild(d);}})();
+
+// ── Config ───────────────────────────────────────────────────
+const API_URL = 'api.php'; // Đường dẫn tới api.php
+
+// ── Validate điểm số ─────────────────────────────────────────
+function parseScore(val) {
+  if (val === '' || val === null || val === undefined) return null;
+  // Cho phép dùng cả dấu chấm và dấu phẩy
+  const v = String(val).trim().replace(',', '.');
+  const n = parseFloat(v);
+  if (isNaN(n) || n < 0 || n > 10) return null;
+  return Math.round(n * 100) / 100;
+}
+function isValidScore(val) {
+  if (val === '' || val === null) return true; // rỗng = chưa nhập, OK
+  const v = String(val).trim().replace(',', '.');
+  const n = parseFloat(v);
+  return !isNaN(n) && n >= 0 && n <= 10 && v === String(n) || v.match(/^\d+(\.\d+)?$/) !== null;
+}
+
+// ── Session (localStorage — giữ phiên qua F5) ───────────────
+const SS = {
+  get token(){ return localStorage.getItem('gpa_tk')||'' },
+  set token(v){ v ? localStorage.setItem('gpa_tk',v) : localStorage.removeItem('gpa_tk') },
+  get user(){ try{ return JSON.parse(localStorage.getItem('gpa_u')||'null') }catch{ return null } },
+  set user(v){ v ? localStorage.setItem('gpa_u',JSON.stringify(v)) : localStorage.removeItem('gpa_u') },
+  // Cache dữ liệu — giữ qua F5
+  get cache(){ try{ return JSON.parse(localStorage.getItem('gpa_cache')||'null') }catch{ return null } },
+  set cache(v){ v ? localStorage.setItem('gpa_cache',JSON.stringify(v)) : localStorage.removeItem('gpa_cache') },
+  clear(){ localStorage.removeItem('gpa_tk');localStorage.removeItem('gpa_u');localStorage.removeItem('gpa_cache') }
+};
+
+// ── App state ────────────────────────────────────────────────
+let S = {
+  hocky: [], mons: {}, hkIdx: 0,
+  showForm: false, editMon: null, saving: false,
+  newHKMode: false, newHKName: '',
+  loginTab: 'login', loginMsg: null,
+};
+
+// ── Grade helpers ────────────────────────────────────────────
+const GR=[[8.5,'A',4],[7.8,'B+',3.5],[7,'B',3],[6.3,'C+',2.5],[5.5,'C',2],[4.8,'D+',1.5],[4,'D',1],[0,'F',0]];
+function getGr(s){ return GR.find(([m])=>s>=m)||GR[7] }
+function bCls(l){ return 'badge b'+(l||'F').replace('+','p') }
+function xl(d){
+  if(d>=3.6) return['Xuất sắc','xs'];if(d>=3.2) return['Giỏi','xg'];
+  if(d>=2.5) return['Khá','xk'];if(d>=2) return['Trung bình','xt'];
+  return['Yếu','xy'];
+}
+function previewSc(loai,hs1,hs2,hs3,th){
+  const p=v=>parseFloat(String(v||'').replace(',','.'));
+  if(loai==='thuchanh'){const a=th.filter(x=>x!=='').map(p);return a.length?+(a.reduce((s,x)=>s+x,0)/a.length).toFixed(1):null}
+  if(hs1===''||hs3==='') return null;
+  const a=hs2.map(x=>p(x)||0),m=a.length,n=1+2*m+3;
+  return+((p(hs1)+2*a.reduce((s,x)=>s+x,0)+3*p(hs3))/n).toFixed(1);
+}
+
+// ── API fetch ─────────────────────────────────────────────────
+async function apiFetch(method, action, body, id){
+  // InfinityFree fix: gửi token qua URL param (Authorization header bị chặn trên PHP-FPM)
+  const opts={method,headers:{'Content-Type':'application/json','Accept':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  let url=`${API_URL}?action=${action}`;
+  if(id!=null) url+=`&id=${id}`;
+  // Gửi token qua cả header LẪN URL param để đảm bảo hoạt động mọi hosting
+  if(SS.token) {
+    opts.headers['Authorization']='Bearer '+SS.token;
+    url+=`&token=${encodeURIComponent(SS.token)}`;
+  }
+  try{
+    const r=await fetch(url,opts);
+    let d;
+    try{ d=await r.json() }catch(e){ throw new Error('Server trả về lỗi không phải JSON. Kiểm tra config.php') }
+    if(!r.ok) throw new Error(d.error||'Lỗi server ('+r.status+')');
+    return d;
+  }catch(e){
+    if(e.message.includes('Failed to fetch')) throw new Error('Không kết nối được server. Kiểm tra đường dẫn api.php');
+    throw e;
+  }
+}
+
+// ── Update preview box only (không re-render để tránh mất focus) ──
+function updatePreview(){
+  const sc=previewSc(F.loai,F.h1,F.h2,F.h3,F.th);
+  const gr=sc!==null?getGr(sc):null;
+  const box=document.getElementById('pvbox');
+  if(!box) return;
+  if(sc!==null&&gr){
+    box.innerHTML=`
+      <span style="font-size:13px">Điểm HP dự kiến:</span>
+      <span class="pvs">${sc}</span>
+      <span class="${bCls(gr[1])}">${gr[1]}</span>
+      <span style="font-size:13px">GPA hệ 4: <strong>${gr[2]}</strong></span>`;
+    box.style.display='flex';
+  } else {
+    box.style.display='none';
+  }
+}
+
+// ── Calc ──────────────────────────────────────────────────────
+function calcHK(hkId){
+  const ms=S.mons[hkId]||[];
+  const dinh=ms.filter(m=>m.diem_chu&&m.diem_chu!=='F'&&m.diem_chu!=='P');
+  const dat=ms.filter(m=>m.diem_chu&&m.diem_chu!=='F');
+  const n=dinh.reduce((a,m)=>a+m.tin_chi,0);
+  return{dtb:n?+(dinh.reduce((a,m)=>a+m.gpa4*m.tin_chi,0)/n).toFixed(2):null,tcDat:dat.reduce((a,m)=>a+m.tin_chi,0),total:ms.length};
+}
+function calcTong(){
+  const all=Object.values(S.mons).flat();
+  const dinh=all.filter(m=>m.diem_chu&&m.diem_chu!=='F'&&m.diem_chu!=='P');
+  const n=dinh.reduce((a,m)=>a+m.tin_chi,0);
+  return{gpa:n?+(dinh.reduce((a,m)=>a+m.gpa4*m.tin_chi,0)/n).toFixed(2):null,tc:n,total:all.length};
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+function toast(msg,type='ok'){
+  document.querySelectorAll('.toast').forEach(e=>e.remove());
+  const t=document.createElement('div');
+  t.className='toast t'+type;t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(16px)';t.style.transition='all .3s';setTimeout(()=>t.remove(),300)},3000);
+}
+
+// ── Render ────────────────────────────────────────────────────
+function render(){
+  document.getElementById('app').innerHTML=SS.token&&SS.user?renderApp():renderLogin();
+  bind();
+}
+
+function renderLogin(){
+  const{loginTab:lt,loginMsg:lm}=S;
+  return`<div class="lp">
+  <div class="lb">
+    <div class="ll"><div class="icon">🎓</div><h1>Bảng Điểm Cá Nhân</h1><p>Công cụ giúp sinh viên tính điểm học phần, GPA học kỳ và GPA tích lũy.</p></div>
+    <div class="tabs">
+      <div class="tab ${lt==='login'?'on':''}" id="tl">Đăng nhập</div>
+      <div class="tab ${lt==='reg'?'on':''}" id="tr">Đăng ký</div>
+    </div>
+    ${lm?`<div class="alert ${lm.t==='ok'?'ao':'ae'}">${lm.m}</div>`:''}
+    ${lt==='login'?`
+      <div class="fg"><label>Tên đăng nhập</label><input id="lu" placeholder="nguyenvana" autocomplete="username"></div>
+      <div class="fg"><label>Mật khẩu</label><input type="password" id="lp" autocomplete="current-password"></div>
+      <button class="btn bp bfl" id="lbtn">Đăng nhập</button>
+    `:`
+      <div class="fg"><label>Họ và tên</label><input id="rn" placeholder="Nguyễn Văn A"></div>
+      <div class="fg"><label>Tên đăng nhập</label><input id="ru" placeholder="nguyenvana"></div>
+      <div class="fg"><label>Mật khẩu <span class="sub">(tối thiểu 6 ký tự)</span></label><input type="password" id="rp"></div>
+      <div class="fg"><label>Xác nhận mật khẩu</label><input type="password" id="rp2"></div>
+      <button class="btn bp bfl" id="rbtn">Tạo tài khoản</button>
+    `}
+  </div></div>`;
+}
+
+function renderApp(){
+  const t=calcTong();const hk=S.hocky[S.hkIdx];
+  const txl=t.gpa!==null?xl(t.gpa):null;
+  return`
+  <header class="hdr"><div class="hdr-i">
+    <div class="logo-w"><div class="logo-d">🎓</div><span>BKUN - Bảng Điểm Cá Nhân</span></div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="up"><div class="av">${(SS.user?.full_name||'U')[0].toUpperCase()}</div>
+  ${(SS.user?.full_name || '').split(' ').slice(-2).join(' ')}</div>
+      <button class="btn bsm" id="out">Đăng xuất</button>
+    </div>
+  </div></header>
+</div>
+  <div class="main">
+  
+  <div class="note-warning">
+      <span class="icon">⚠</span>
+      <span>Lưu ý: Điểm GPA chỉ mang tính chất tham khảo, không phải kết quả chính thức từ nhà trường.</span>
+   </div>
+  
+    <div class="sg">
+      <div class="sc cg"><div class="si">📊</div><div class="sv">${t.gpa??'—'}</div><div class="sl">GPA tích lũy (hệ 4)</div></div>
+      <div class="sc cb"><div class="si">📚</div><div class="sv">${t.tc}</div><div class="sl">Tín chỉ tích lũy</div></div>
+      <div class="sc ca"><div class="si">📝</div><div class="sv">${t.total}</div><div class="sl">Tổng số môn học</div></div>
+      <div class="sc cp"><div class="si">🏅</div>
+        <div class="sv" style="font-size:18px;${txl?'':'color:#94a3b8'}">${txl?txl[0]:'—'}</div>
+        <div class="sl">Xếp loại tốt nghiệp</div>
+      </div>
+    </div>
+    <div class="hknav"><div class="hknav-i">
+      <div class="hktabs">${S.hocky.map((h,i)=>`<div class="hktab ${S.hkIdx===i?'on':''}" id="hkt${i}">${h.ten}</div>`).join('')}</div>
+      ${S.newHKMode?`
+        <input id="hkin" value="${S.newHKName}" placeholder="VD: Học kỳ 1 — 2024" style="width:200px">
+        <button class="btn bp bsm" id="hkok">OK</button>
+        <button class="btn bsm" id="hkx">Hủy</button>
+      `:`<button class="btn bp bsm" id="hkadd">+ Thêm HK</button>`}
+    </div></div>
+    ${!hk
+      ?`<div class="hkcard"><div class="empty"><div class="ei">📋</div>Chưa có học kỳ nào.<br>Nhấn "<strong>+ Thêm HK</strong>" để bắt đầu!</div></div>`
+      :renderHK(hk)}
+  </div>`;
+}
+function renderHK(hk){
+  const st=calcHK(hk.id);const hkxl=st.dtb!==null?xl(st.dtb):null;
+  const ms=S.mons[hk.id]||[];
+  const rows=ms.length?ms.map(m=>`
+    <tr>
+      <td><strong>${m.ten}</strong></td>
+      <td style="text-align:center">${m.tin_chi}</td>
+      <td style="text-align:center;font-size:11px;color:var(--muted)">${m.loai==='thuchanh'?'Thực hành':'Lý thuyết'}</td>
+      <td style="text-align:center;font-weight:600">${m.diem_hp??'—'}</td>
+      <td style="text-align:center">${m.diem_chu?`<span class="${bCls(m.diem_chu)}">${m.diem_chu}</span>`:'<span style="color:#ccc">—</span>'}</td>
+      <td style="text-align:center;font-weight:600;color:var(--g)">${m.gpa4??'—'}</td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn bsm" id="em${m.id}">✏️ Sửa</button>
+        <button class="btn bsm bd" id="dm${m.id}" style="margin-left:4px">🗑️</button>
+      </td>
+    </tr>`).join('')
+  :`<tr><td colspan="7"><div class="empty"><div class="ei">📖</div>Chưa có môn học nào</div></td></tr>`;
+
+  return`<div class="hkcard">
+    <div class="hkh">
+      <div class="hkta">
+        <span class="hkt">${hk.ten}</span>
+        ${st.dtb!==null?`<span class="chip">${st.dtb} / 4.0</span>`:''}
+        ${hkxl?`<span class="xlb ${hkxl[1]}">${hkxl[0]}</span>`:''}
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${S.saving?`<span style="font-size:12px;color:var(--muted)"><span class="sp spg"></span> Đang lưu...</span>`:''}
+        ${!S.showForm?`<button class="btn bp bsm" id="madd">+ Thêm môn</button>`:''}
+        <button class="btn bsm bd" id="hkdel">🗑️ Xóa HK</button>
+      </div>
+    </div>
+    <div class="hksr">
+      <div class="hkst"><div class="hksv">${st.dtb??'—'}</div><div class="hksl">ĐTB học kỳ (hệ 4)</div></div>
+      <div class="hkst"><div class="hksv">${st.tcDat}</div><div class="hksl">Tín chỉ đạt</div></div>
+      <div class="hkst"><div class="hksv">${st.total}</div><div class="hksl">Số môn học</div></div>
+    </div>
+    ${S.showForm?renderForm():''}
+    <div class="tw"><table>
+      <thead><tr>
+        <th>Tên môn học</th><th style="text-align:center">TC</th><th style="text-align:center">Loại</th>
+        <th style="text-align:center">Điểm HP</th><th style="text-align:center">Điểm chữ</th>
+        <th style="text-align:center">GPA</th><th style="text-align:right">Thao tác</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <footer class="footer">Copyright © 2026 <a href="https://github.com/btrgvn" target="_blank" rel="noopener">BKUN.</a> All rights reserved.</footer>
+  </div>`;
+}
+
+// ── Form môn ──────────────────────────────────────────────────
+let F={ten:'',tc:3,loai:'lytuyet',h1:'',h2:[''],h3:'',th:['']};
+function resetF(){ F={ten:'',tc:3,loai:'lytuyet',h1:'',h2:[''],h3:'',th:['']} }
+
+function renderForm(){
+  const sc=previewSc(F.loai,F.h1,F.h2,F.h3,F.th);
+  const gr=sc!==null?getGr(sc):null;
+  const isLT=F.loai!=='thuchanh';
+  const h2r=F.h2.map((v,i)=>`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input type="text" inputmode="decimal" id="h2${i}" value="${v}" style="width:80px" placeholder="vd: 8.5">
+      <span style="font-size:12px;color:var(--muted)">Bài ${i+1}</span>
+      ${F.h2.length>1?`<span id="dh2${i}" style="cursor:pointer;color:#ccc;font-size:18px">×</span>`:''}
+    </div>`).join('');
+  const thr=F.th.map((v,i)=>`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input type="text" inputmode="decimal" id="th${i}" value="${v}" style="width:80px" placeholder="vd: 8.5">
+      <span style="font-size:12px;color:var(--muted)">Lần ${i+1}</span>
+      ${F.th.length>1?`<span id="dth${i}" style="cursor:pointer;color:#ccc;font-size:18px">×</span>`:''}
+    </div>`).join('');
+  return`<div class="fc">
+    <div class="fct">${S.editMon?'✏️ Chỉnh sửa môn học':'➕ Thêm môn học mới'}</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div><label>Tên môn học</label><input id="ften" value="${F.ten}" placeholder="VD: Giải tích 1"></div>
+      <div><label>Số tín chỉ</label><select id="ftc">${[1,2,3,4,5].map(n=>`<option value="${n}" ${F.tc==n?'selected':''}>${n} tín chỉ</option>`).join('')}</select></div>
+    </div>
+    <div style="margin-bottom:14px"><label>Loại học phần</label>
+      <select id="flo">
+        <option value="lytuyet" ${F.loai==='lytuyet'?'selected':''}>📖 Lý thuyết — Hệ số 1-2-3</option>
+        <option value="thuchanh" ${F.loai==='thuchanh'?'selected':''}>🔬 Thực hành — Trung bình cộng</option>
+      </select>
+    </div>
+    ${isLT?`
+    <div class="sbox">
+      <div class="fnote">Công thức: <strong>(1×HS1 + 2×ΣHS2 + 3×HS3) ÷ (1+2m+3)</strong> — m là số cột HS2</div>
+      <div class="g2" style="margin-bottom:12px">
+        <div><label>Điểm HS1 <span class="sub">(chuyên cần, thái độ)</span></label>
+          <input type="text" inputmode="decimal" id="fh1" value="${F.h1}" placeholder="vd: 8.5"></div>
+        <div><label>Điểm HS3 <span class="sub">(thi cuối kỳ)</span></label>
+          <input type="text" inputmode="decimal" id="fh3" value="${F.h3}" placeholder="vd: 8.5"></div>
+      </div>
+      <label>Điểm HS2 <span class="sub">(kiểm tra quá trình — mỗi TC ≥ 1 bài)</span></label>
+      <div style="margin-top:10px">${h2r}</div>
+      <button class="btn bsm" id="ah2" style="margin-top:4px">+ Thêm bài HS2</button>
+    </div>`:`
+    <div class="sbox">
+      <label>Điểm kiểm tra thực hành <span class="sub">(trung bình cộng tất cả bài)</span></label>
+      <div style="margin-top:10px">${thr}</div>
+      <button class="btn bsm" id="ath" style="margin-top:4px">+ Thêm bài kiểm tra</button>
+    </div>`}
+    <div class="pvbox" id="pvbox" style="display:${sc!==null&&gr?'flex':'none'}">
+      ${sc!==null&&gr?`
+      <span style="font-size:13px">Điểm HP dự kiến:</span>
+      <span class="pvs">${sc}</span>
+      <span class="${bCls(gr[1])}">${gr[1]}</span>
+      <span style="font-size:13px">GPA hệ 4: <strong>${gr[2]}</strong></span>`:''}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn bp bsm" id="msave" ${S.saving?'disabled':''}>
+        ${S.saving?'<span class="sp"></span>':''}${S.editMon?'Lưu thay đổi':'Thêm môn học'}
+      </button>
+      <button class="btn bsm" id="mcancel">Hủy</button>
+    </div>
+  </div>`;
+}
+
+// ── Sync form inputs → F ──────────────────────────────────────
+function syncF(){
+  const g=id=>{const e=document.getElementById(id);return e?e.value:null};
+  // Chuẩn hóa: đổi dấu phẩy thành dấu chấm
+  const norm=v=>v!==null?String(v).replace(',','.'):v;
+  if(g('ften')!==null) F.ten=g('ften');
+  if(g('ftc'))  F.tc=parseInt(g('ftc'));
+  const lo=g('flo'); if(lo) F.loai=lo;
+  if(F.loai!=='thuchanh'){
+    const v1=g('fh1');if(v1!==null) F.h1=norm(v1);
+    const v3=g('fh3');if(v3!==null) F.h3=norm(v3);
+    F.h2=F.h2.map((_,i)=>{const v=g('h2'+i);return v!==null?norm(v):_;});
+  } else {
+    F.th=F.th.map((_,i)=>{const v=g('th'+i);return v!==null?norm(v):_;});
+  }
+}
+
+// ── Event binding ─────────────────────────────────────────────
+function on(id,ev,fn){const e=document.getElementById(id);if(e)e.addEventListener(ev,fn)}
+function bind(){
+  if(!SS.token||!SS.user){
+    on('tl','click',()=>{S.loginTab='login';S.loginMsg=null;render()});
+    on('tr','click',()=>{S.loginTab='reg';S.loginMsg=null;render()});
+    on('lbtn','click',doLogin);
+    on('rbtn','click',doRegister);
+    on('lp','keydown',e=>{if(e.key==='Enter')doLogin()});
+    return;
+  }
+  on('out','click',()=>{ SS.clear(); S={hocky:[],mons:{},hkIdx:0,showForm:false,editMon:null,saving:false,newHKMode:false,newHKName:'',loginTab:'login',loginMsg:null}; render(); });
+
+  S.hocky.forEach((_,i)=>on('hkt'+i,'click',()=>{
+    S.hkIdx=i;S.showForm=false;S.editMon=null;resetF();
+    loadMons(S.hocky[i].id).then(()=>{saveCache();render()});
+  }));
+  on('hkadd','click',()=>{S.newHKMode=true;render()});
+  on('hkx','click',()=>{S.newHKMode=false;S.newHKName='';render()});
+  on('hkok','click',doAddHK);
+  const ni=document.getElementById('hkin');
+  if(ni){ni.addEventListener('input',e=>S.newHKName=e.target.value);ni.addEventListener('keydown',e=>{if(e.key==='Enter')doAddHK()});}
+  on('hkdel','click',doDelHK);
+  on('madd','click',()=>{resetF();S.showForm=true;S.editMon=null;render()});
+  on('mcancel','click',()=>{S.showForm=false;S.editMon=null;render()});
+  on('msave','click',doSaveMon);
+  on('flo','change',e=>{syncF();F.loai=e.target.value;render()});
+  on('fh1','input',e=>{F.h1=e.target.value;updatePreview()});
+  on('fh3','input',e=>{F.h3=e.target.value;updatePreview()});
+  F.h2.forEach((_,i)=>on('h2'+i,'input',e=>{F.h2[i]=e.target.value;updatePreview()}));
+  F.th.forEach((_,i)=>on('th'+i,'input',e=>{F.th[i]=e.target.value;updatePreview()}));
+  on('ah2','click',()=>{syncF();F.h2.push('');render()});
+  on('ath','click',()=>{syncF();F.th.push('');render()});
+  F.h2.forEach((_,i)=>on('dh2'+i,'click',()=>{syncF();F.h2.splice(i,1);if(!F.h2.length)F.h2=[''];render()}));
+  F.th.forEach((_,i)=>on('dth'+i,'click',()=>{syncF();F.th.splice(i,1);if(!F.th.length)F.th=[''];render()}));
+  (S.mons[S.hocky[S.hkIdx]?.id]||[]).forEach(m=>{
+    on('em'+m.id,'click',()=>{
+      S.editMon=m;S.showForm=true;
+      F={ten:m.ten,tc:m.tin_chi,loai:m.loai,h1:m.diem_hs1??'',
+        h2:m.diem_hs2?.length?m.diem_hs2.map(String):[''],
+        h3:m.diem_hs3??'',th:m.diem_thuchanh?.length?m.diem_thuchanh.map(String):['']};
+      render();
+    });
+    on('dm'+m.id,'click',()=>doDelMon(m));
+  });
+}
+
+// ── Save/load cache ───────────────────────────────────────────
+function saveCache(){
+  SS.cache={hocky:S.hocky,mons:S.mons,hkIdx:S.hkIdx};
+}
+function loadCache(){
+  const c=SS.cache;
+  if(c){S.hocky=c.hocky||[];S.mons=c.mons||{};S.hkIdx=c.hkIdx||0;}
+}
+
+// ── Actions ───────────────────────────────────────────────────
+async function doLogin(){
+  const u=document.getElementById('lu')?.value||'';
+  const p=document.getElementById('lp')?.value||'';
+  if(!u||!p){S.loginMsg={t:'err',m:'Vui lòng nhập đầy đủ'};render();return;}
+  document.getElementById('lbtn').disabled=true;
+  document.getElementById('lbtn').textContent='Đang đăng nhập...';
+  try{
+    const d=await apiFetch('POST','login',{username:u,password:p});
+    SS.token=d.token; SS.user={full_name:d.full_name,username:d.username};
+    S.loginMsg=null;
+    await loadAllData();
+    saveCache(); render();
+  }catch(e){
+    S.loginMsg={t:'err',m:e.message};render();
+  }
+}
+
+async function doRegister(){
+  const n=document.getElementById('rn')?.value||'';
+  const u=document.getElementById('ru')?.value||'';
+  const p=document.getElementById('rp')?.value||'';
+  const p2=document.getElementById('rp2')?.value||'';
+  if(p!==p2){S.loginMsg={t:'err',m:'Mật khẩu xác nhận không khớp'};render();return;}
+  document.getElementById('rbtn').disabled=true;
+  document.getElementById('rbtn').textContent='Đang xử lý...';
+  try{
+    await apiFetch('POST','register',{username:u,password:p,full_name:n});
+    S.loginTab='login';S.loginMsg={t:'ok',m:'Đăng ký thành công! Hãy đăng nhập.'};render();
+  }catch(e){S.loginMsg={t:'err',m:e.message};render();}
+}
+
+async function loadAllData(){
+  const hkList=await apiFetch('GET','hocky');
+  S.hocky=hkList;
+  if(hkList.length){
+    await loadMons(hkList[0].id);
+    S.hkIdx=0;
+  }
+}
+
+async function loadMons(hkId){
+  if(S.mons[hkId]) return;
+  const d=await apiFetch('GET','mon',null,hkId);
+  S.mons[hkId]=d;
+}
+
+async function doAddHK(){
+  const n=(document.getElementById('hkin')?.value||S.newHKName||'').trim()||('Học kỳ '+(S.hocky.length+1));
+  try{
+    const d=await apiFetch('POST','hocky',{ten:n});
+    S.hocky.push(d);S.mons[d.id]=[];S.hkIdx=S.hocky.length-1;
+    S.newHKMode=false;S.newHKName='';
+    saveCache();render();toast('Đã thêm học kỳ "'+n+'"');
+  }catch(e){toast(e.message,'err');}
+}
+
+async function doDelHK(){
+  const hk=S.hocky[S.hkIdx];
+  if(!confirm(`Xóa học kỳ "${hk.ten}"?\nTất cả môn học sẽ bị xóa.`)) return;
+  try{
+    await apiFetch('DELETE','hocky',null,hk.id);
+    delete S.mons[hk.id];S.hocky.splice(S.hkIdx,1);
+    S.hkIdx=Math.max(0,S.hkIdx-1);
+    saveCache();render();toast('Đã xóa học kỳ');
+  }catch(e){toast(e.message,'err');}
+}
+
+async function doSaveMon(){
+  syncF();
+  if(!F.ten.trim()){toast('Vui lòng nhập tên môn học','err');return;}
+  S.saving=true;render();
+  const ns=v=>v!==''&&v!==null?parseFloat(String(v).replace(',','.')):null;
+  const body={
+    ten:F.ten.trim(),tin_chi:parseInt(F.tc),loai:F.loai,
+    diem_hs1:ns(F.h1),
+    diem_hs2:F.h2.filter(x=>x!=='').map(x=>parseFloat(String(x).replace(',','.'))),
+    diem_hs3:ns(F.h3),
+    diem_thuchanh:F.th.filter(x=>x!=='').map(x=>parseFloat(String(x).replace(',','.'))),
+  };
+  try{
+    const hk=S.hocky[S.hkIdx];
+    if(S.editMon){
+      const r=await apiFetch('PUT','mon',body,S.editMon.id);
+      S.mons[hk.id]=S.mons[hk.id].map(m=>m.id===S.editMon.id
+        ?{...m,...body,diem_hp:r.diem_hp,diem_chu:r.diem_chu,gpa4:r.gpa4}:m);
+      toast('Đã cập nhật môn học');
+    }else{
+      const r=await apiFetch('POST','mon',body,hk.id);
+      S.mons[hk.id]=[...(S.mons[hk.id]||[]),r];
+      toast('Đã thêm môn học');
+    }
+    S.showForm=false;S.editMon=null;resetF();
+    saveCache();
+  }catch(e){toast(e.message,'err');}
+  S.saving=false;render();
+}
+
+async function doDelMon(m){
+  if(!confirm(`Xóa môn "${m.ten}"?`)) return;
+  const hk=S.hocky[S.hkIdx];
+  try{
+    await apiFetch('DELETE','mon',null,m.id);
+    S.mons[hk.id]=S.mons[hk.id].filter(x=>x.id!==m.id);
+    saveCache();render();toast('Đã xóa môn học');
+  }catch(e){toast(e.message,'err');}
+}
+
+// ── Init — giữ phiên qua F5 ───────────────────────────────────
+(async()=>{
+  if(SS.token&&SS.user){
+    // Load cache trước để hiển thị ngay lập tức
+    loadCache();render();
+    // Sau đó sync lại từ server để đảm bảo dữ liệu mới nhất
+    try{
+      await loadAllData();
+      saveCache();render();
+    }catch(e){
+      // Token hết hạn hoặc lỗi server
+      if(e.message.includes('Chưa đăng nhập')||e.message.includes('hết hạn')){
+        SS.clear();render();
+      }
+      // Nếu lỗi khác (mất mạng) thì giữ cache cũ, không logout
+    }
+  } else {
+    render();
+  }
+})();
+</script>
+</body>
+</html>
