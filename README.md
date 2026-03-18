@@ -12,6 +12,10 @@ Website được thiết kế tối ưu cho:
 - 📱 Mobile
 - 💻 Desktop
 - ⚡ Hosting miễn phí (InfinityFree, 000webhost,...)
+<img width="840" height="907" alt="Screenshot 2026-03-16 221033" src="https://github.com/user-attachments/assets/c12e2946-0dce-42fb-aeac-bf132e2cd772" />
+
+<img width="1207" height="909" alt="Screenshot 2026-03-16 221158" src="https://github.com/user-attachments/assets/5844b74e-682a-4833-be15-f85be0585f57" />
+
 ---
 # ✨ Tính năng
 ### 📚 Quản lý học kỳ
